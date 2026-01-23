@@ -1,0 +1,11 @@
+pathway
+groq
+openai
+sentence-transformers
+transformers
+tqdm
+pandas
+numpy
+python-dotenv
+scikit-learn
+torch
