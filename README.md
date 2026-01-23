@@ -57,7 +57,7 @@ Backstory-Consistency-NLP/
 │   ├── run_ingestion.py
 │   ├── run_test.py
 │   └── run_validation.py
-└── generated_files/            # Output directory for CSVs
+└── generated_files/            # Output directory for CSVs (for testing purpose only 2 input is taken)
 ```
 
 
@@ -90,7 +90,7 @@ Runs Ingestion → Validation → Testing sequentially in one step.
 ```bash
 python main.py
 ```
-Afer the run is complete, all the output files will be saved in `generated_files/` directory.
+After the run is complete, all the output files will be saved in `generated_files/` directory.
 
 #### 2. Run Individual Steps (For Debugging)
 You can run any step in isolation. They will automatically load/save data to `generated_files/`.
