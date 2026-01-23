@@ -38,3 +38,74 @@ The solution is a Retrieval-Augmented Generation (RAG) pipeline designed to veri
     - It evaluates the claim against the retrieved evidence.
     - Outputs a JSON verdict: `SUPPORT`, `CONTRADICT`, or `NEUTRAL`, along with a confidence score and rationale.
     - A contradiction is flagged if the verdict is `CONTRADICT` with high confidence (>= 0.5).
+
+
+## Project Structure
+
+```
+Backstory-Consistency-NLP/
+├── main.py                     # Entry point to run the full pipeline
+├── requirements.txt            # Project dependencies
+├── .env                        # Environment variables (API Keys)
+├── helper_functions/           # Reusable logic modules
+│   ├── data_ingestion.py
+│   ├── evidence_retrieval.py
+│   ├── query_generator.py
+│   ├── validator.py
+│   └── verification.py
+├── run_code/                   # Standalone scripts for individual steps
+│   ├── run_ingestion.py
+│   ├── run_test.py
+│   └── run_validation.py
+└── generated_files/            # Output directory for CSVs
+```
+
+
+## How to Run
+
+### Prerequisites
+
+1. Python 3.11 or higher
+2. Groq API Key
+
+### Installation
+
+```bash
+pip install -r requirements.txt
+```
+
+### Environment Setup
+
+Create a `.env` file in the root directory and add your API keys:
+
+```bash
+GROQ_API_KEY_i_1=your_api_key_1
+GROQ_API_KEY_i_2=your_api_key_2
+```
+
+### Run Pipeline
+
+#### 1. Run Full Pipeline (Recommended)
+Runs Ingestion → Validation → Testing sequentially in one step.
+```bash
+python main.py
+```
+Afer the run is complete, all the output files will be saved in `generated_files/` directory.
+
+#### 2. Run Individual Steps (For Debugging)
+You can run any step in isolation. They will automatically load/save data to `generated_files/`.
+
+**Ingestion:**
+```bash
+python run_code/run_ingestion.py
+```
+
+**Validation:**
+```bash
+python run_code/run_validation.py
+```
+
+**Testing:**
+```bash
+python run_code/run_test.py
+```
