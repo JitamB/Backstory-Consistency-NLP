@@ -68,6 +68,7 @@ Backstory-Consistency-NLP/
 1. Python 3.11 or higher
 2. Groq API Key
 
+Clone the repository in your local machine and navigate to the project directory. (Creating a local environment is recommended)
 ### Installation
 
 ```bash
@@ -83,7 +84,7 @@ GROQ_API_KEY_i_1=your_api_key_1
 GROQ_API_KEY_i_2=your_api_key_2
 ```
 
-### Run Pipeline
+### Run Pipeline (Two ways)
 
 #### 1. Run Full Pipeline (Recommended)
 Runs Ingestion → Validation → Testing sequentially in one step.
