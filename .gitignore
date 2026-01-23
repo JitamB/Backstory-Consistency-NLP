@@ -4,3 +4,4 @@ venv
 __pycache__
 #due to large size
 index_df.csv
+code.ipynb
