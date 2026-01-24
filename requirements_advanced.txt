@@ -1,0 +1,58 @@
+# Advanced RAG System Dependencies
+# Production-grade RAG with <1% hallucination tolerance
+
+# ============================================
+# Core Framework
+# ============================================
+llama-index>=0.10.0
+llama-index-embeddings-huggingface
+llama-index-llms-groq
+llama-index-vector-stores-qdrant
+
+# ============================================
+# Hybrid Search
+# ============================================
+qdrant-client>=1.7.0
+rank-bm25>=0.2.2
+
+# ============================================
+# Advanced Embedding & Reranking
+# ============================================
+sentence-transformers>=2.3.0
+FlagEmbedding>=1.2.0  # BGE-Reranker
+
+# ============================================
+# Graph RAG & NLP
+# ============================================
+networkx>=3.0
+pyvis  # Graph visualization
+spacy>=3.7.0  # Entity extraction
+
+# ============================================
+# Structured Outputs (Production Hardening)
+# ============================================
+instructor>=0.6.0  # Pydantic LLM outputs
+pydantic>=2.0.0
+
+# ============================================
+# Caching (Latency Optimization)
+# ============================================
+redis>=5.0.0
+gptcache>=0.1.40
+
+# ============================================
+# Evaluation
+# ============================================
+ragas>=0.1.0
+datasets
+
+# ============================================
+# Existing Dependencies (Retained)
+# ============================================
+groq
+pandas
+numpy
+tqdm
+python-dotenv
+torch
+scikit-learn

@@ -1,7 +1,47 @@
-.DS_Store
+# Environment and secrets
 .env
-venv
-__pycache__
-#due to large size
+.env.local
+*.pem
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Jupyter notebooks (user-specific)
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Large files
 index_df.csv
+*.pkl
+*.pt
+*.bin
+*.safetensors
+
+# Colab/temporary
+backstory_minimal.zip
+backstory.zip
+
+# Old notebooks (if needed, remove this line)
 Code.ipynb
+
+# Cached models (will be downloaded on first run)
+models/
+.cache/
+huggingface/
