@@ -10,7 +10,7 @@ COVE_VERIFICATION_TEMPLATE = """You are a fact-checking system. Your goal is ZER
 ## CLAIM TO VERIFY
 {claim}
 
-## EVIDENCE PASSAGES (with IDs)
+## EVIDENCE PASSAGES (with IDs like [e1], [e2], etc.)
 {evidence_with_ids}
 
 ## VERIFICATION PROTOCOL (Follow Exactly)
@@ -21,25 +21,25 @@ Break the claim into atomic facts that can be individually verified.
 ### Step 2: For Each Sub-Claim, Find Supporting Evidence
 - Quote the EXACT TEXT from evidence that supports or contradicts
 - If no evidence exists, state "NO EVIDENCE FOUND"
-- You MUST cite the passage ID: [CITE: passage_1]
+- Cite using the passage ID exactly as shown: [e1], [e2], etc.
 
 ### Step 3: Check for Contradictions
 - Does any evidence DIRECTLY contradict the claim?
 - Is the contradiction EXPLICIT or merely implied?
 
-### Step 4: Uncertainty Declaration
+### Step 4: Confidence Assessment
 - Rate your confidence: HIGH (>90%), MEDIUM (60-90%), LOW (<60%)
-- If LOW, you MUST state "INSUFFICIENT EVIDENCE"
+- If evidence supports the claim, verdict should be CONSISTENT
+- If evidence contradicts the claim, verdict should be CONTRADICTION
 
 ### Step 5: Final Verdict
-Provide your verdict following the exact schema.
+Provide your structured verdict. Use CONSISTENT if evidence supports, CONTRADICTION if evidence contradicts, INSUFFICIENT_EVIDENCE only if truly no relevant evidence found.
 
 ## CRITICAL RULES
 1. NEVER infer beyond explicit evidence
-2. If uncertain, verdict is INSUFFICIENT_EVIDENCE, NOT NEUTRAL
-3. EVERY claim must have a citation or be marked UNFOUNDED
-4. Quote evidence verbatim, do not paraphrase
-5. Consider temporal context - ensure evidence is from correct narrative position
+2. Citations MUST use the exact IDs shown: [e1], [e2], [e3], etc.
+3. If claim is supported by evidence, verdict is CONSISTENT (not INSUFFICIENT)
+4. Quote evidence verbatim when possible
 """
 
 CLAIM_DECOMPOSITION_TEMPLATE = """Analyze this backstory for character "{character_name}":

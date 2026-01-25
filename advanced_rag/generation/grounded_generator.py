@@ -70,15 +70,19 @@ class GroundedGenerator:
                 self.raw_client = None
     
     def _format_evidence(self, evidence: list[dict]) -> str:
-        """Format evidence chunks with IDs for the prompt."""
+        """Format evidence chunks with simple numeric IDs for the prompt."""
         formatted = []
         for i, e in enumerate(evidence):
-            chunk_id = e.get("chunk_id", f"passage_{i+1}")
+            # Use simple numbered IDs that LLM can easily reference
+            simple_id = f"e{i+1}"
             text = e.get("text", "")
             position = e.get("narrative_position", 0)
             
+            # Store mapping for later validation
+            e["simple_id"] = simple_id
+            
             formatted.append(
-                f"[{chunk_id}] (Position: {position:.2f})\n{text}\n"
+                f"[{simple_id}] (Position: {position:.2f})\n{text}\n"
             )
         return "\n".join(formatted)
     
@@ -89,30 +93,43 @@ class GroundedGenerator:
     ) -> VerificationResult:
         """
         Validate that all citations reference actual evidence.
-        
-        Removes claims with invalid citations and adjusts confidence.
+        Uses flexible matching for citation formats.
         """
-        valid_ids = {e.get("chunk_id", f"passage_{i}") for i, e in enumerate(evidence)}
+        # Build set of valid IDs (both simple and original)
+        valid_ids = set()
+        for i, e in enumerate(evidence):
+            simple_id = f"e{i+1}"
+            valid_ids.add(simple_id)
+            valid_ids.add(simple_id.upper())  # E1, E2, etc.
+            valid_ids.add(f"passage_{i+1}")
+            valid_ids.add(f"[{simple_id}]")
+            if "chunk_id" in e:
+                valid_ids.add(e["chunk_id"])
         
         validated_subclaims = []
         invalid_citations = 0
         
         for subclaim in result.sub_claims:
-            valid_cites = [c for c in subclaim.citations if c in valid_ids]
-            if subclaim.citations and not valid_cites:
-                # All citations invalid - mark as unfounded
+            # Normalize citations to match our format
+            normalized_cites = []
+            for c in subclaim.citations:
+                c_clean = c.strip("[]")
+                if c_clean in valid_ids or c in valid_ids:
+                    normalized_cites.append(c_clean)
+            
+            if subclaim.citations and not normalized_cites:
                 invalid_citations += 1
                 subclaim.evidence = None
                 subclaim.citations = []
                 subclaim.verdict = Verdict.INSUFFICIENT
-                subclaim.reasoning += " [WARNING: Invalid citations removed]"
+                subclaim.reasoning += " [No valid citations found]"
             else:
-                subclaim.citations = valid_cites
+                subclaim.citations = normalized_cites
             validated_subclaims.append(subclaim)
         
-        # Adjust confidence if citations were invalid
+        # Lighter penalty for invalid citations
         if invalid_citations > 0:
-            penalty = invalid_citations * 0.1
+            penalty = min(0.3, invalid_citations * 0.05)
             result.confidence = max(0.0, result.confidence - penalty)
             logger.warning(f"Removed {invalid_citations} invalid citations, "
                          f"confidence adjusted to {result.confidence:.2f}")
