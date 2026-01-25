@@ -93,48 +93,37 @@ class GroundedGenerator:
     ) -> VerificationResult:
         """
         Validate that all citations reference actual evidence.
-        Uses flexible matching for citation formats.
+        NOTE: Only logs warnings, does NOT modify confidence or verdict.
+        LLM's original assessment is preserved to avoid compounding penalties.
         """
         # Build set of valid IDs (both simple and original)
         valid_ids = set()
         for i, e in enumerate(evidence):
             simple_id = f"e{i+1}"
             valid_ids.add(simple_id)
-            valid_ids.add(simple_id.upper())  # E1, E2, etc.
+            valid_ids.add(simple_id.upper())
             valid_ids.add(f"passage_{i+1}")
             valid_ids.add(f"[{simple_id}]")
             if "chunk_id" in e:
                 valid_ids.add(e["chunk_id"])
         
-        validated_subclaims = []
-        invalid_citations = 0
-        
+        invalid_count = 0
         for subclaim in result.sub_claims:
-            # Normalize citations to match our format
-            normalized_cites = []
+            # Check if citations are valid, but DON'T change verdict
+            valid_cites = []
             for c in subclaim.citations:
                 c_clean = c.strip("[]")
                 if c_clean in valid_ids or c in valid_ids:
-                    normalized_cites.append(c_clean)
-            
-            if subclaim.citations and not normalized_cites:
-                invalid_citations += 1
-                subclaim.evidence = None
-                subclaim.citations = []
-                subclaim.verdict = Verdict.INSUFFICIENT
-                subclaim.reasoning += " [No valid citations found]"
-            else:
-                subclaim.citations = normalized_cites
-            validated_subclaims.append(subclaim)
+                    valid_cites.append(c_clean)
+                else:
+                    invalid_count += 1
+            subclaim.citations = valid_cites if valid_cites else subclaim.citations
         
-        # Lighter penalty for invalid citations
-        if invalid_citations > 0:
-            penalty = min(0.3, invalid_citations * 0.05)
-            result.confidence = max(0.0, result.confidence - penalty)
-            logger.warning(f"Removed {invalid_citations} invalid citations, "
-                         f"confidence adjusted to {result.confidence:.2f}")
+        # Log warning but preserve original confidence
+        if invalid_count > 0:
+            logger.warning(f"Found {invalid_count} unmatched citations (format issue, not penalizing confidence)")
+            result.missing_information.append(f"Citation format mismatch: {invalid_count} refs")
         
-        result.sub_claims = validated_subclaims
         return result
     
     def verify_claim(
