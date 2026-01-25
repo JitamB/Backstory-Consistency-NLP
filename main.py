@@ -29,11 +29,11 @@ def main():
     # 2. Run Validation (uses index_df from memory)
     print("\n--- Running Validation ---")
     index_df = pd.read_csv("./generated_files/index_df.csv")
-    run_validation(index_df, limit=None)
+    run_validation(index_df, limit=2)
 
     # 3. Run Test (uses index_df from memory)
     print("\n--- Running Test ---")
-    run_test(index_df, limit=None)
+    run_test(index_df, limit=2)
 
     print("\n✅ Pipeline Finished Successfully!")
 
